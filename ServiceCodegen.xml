@@ -1,0 +1,412 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<methods>
+
+  <!-- SERVICE -->
+  
+  <method name="MockError" method="Get" endpoint="service/mockerror/{number}">
+    <summary>
+      Always throws an exception with a message containing the [paramref name="number"/].
+    </summary>
+    <remarks>
+      This test method verifies that an unhandled service-side exception is converted into a [c]CarbonServiceException[/c] expected on the client-side.
+    </remarks>
+    <remarks>THIS ARE MOCK REMARKS</remarks>
+    <parameters>
+      <parameter route="true" type="int" name="number" description="An arbitrary number to pass into the mock Exception."/>
+    </parameters>
+    <return type="int" description="No value will ever be returned. An Exception is always thrown (there is a one in 4 billion chance of no throw)."/>
+    <exceptions>
+      <exception type="CarbonServiceException" description="This exception is always thrown"/>
+    </exceptions>
+  </method>
+
+  <method name="GetServiceInfo" method="Get" endpoint="service/info">
+    <summary>Gets information about the hosting environment and version of the service.</summary>
+    <return type="ServiceInfo" description="An instance of a [c]ServiceInfo[/c] class."/>
+  </method>
+
+  <!-- SESSION -->
+
+  <method name="StartSessionFree" method="Post" endpoint="session/start/free" session="start">
+    <summary>Starts a web service session using the restricted free licensing account.</summary>
+    <summary>A successful request causes the returned session id to be included in the headers of all subsequent service calls, effectively indicating to the service that the calls are coming from an authenticated session.</summary>
+    <parameters>
+      <parameter type="string" name="clientIdentifier" description="A value that identifies the client using the free licence. Use an email address, company name or similar distinctive value."/>
+      <parameter type="bool" name="skipCache" description="True to skip any cached licence and force retrieval of a new one from the licensing web service." default="false"/>
+    </parameters>
+    <web postType="AuthenticateFreeRequest"/>
+    <return type="SessionInfo" description="Summary information about the licensing account associated with the session."/>
+  </method>
+
+  <method name="LoginId" method="Post" endpoint="session/start/login/id" session="start">
+    <summary>Authenticates account Name and Password credentials. Does not start a session.</summary>
+    <parameters>
+      <parameter type="string" name="id" description="Licensing account Id."/>
+      <parameter type="string" name="password" description="Licensing account password."/>
+      <parameter type="bool" name="skipCache" description="True to skip any cached licence and force retrieval of a new one from the licensing web service." default="false"/>
+    </parameters>
+    <web postType="AuthenticateIdRequest"/>
+    <return type="SessionInfo" description="Summary information about the licensing account associated with the session."/>
+    <exceptions>
+      <exception type="CarbonServiceException" description="Thrown if the credentials are incorrect."/>
+    </exceptions>
+  </method>
+
+  <method name="AuthenticateName" method="Post" endpoint="session/start/authenticate/name" session="start">
+    <summary>Authenticates account Name and Password credentials. Does not start a session.</summary>
+    <parameters>
+      <parameter type="string" name="name" description="Licensing account Name."/>
+      <parameter type="string" name="password" description="Licensing account password."/>
+    </parameters>
+    <web postType="AuthenticateNameRequest"/>
+    <return type="SessionInfo" description="Summary information about the licensing account associated with the session."/>
+    <exceptions>
+      <exception type="CarbonServiceException" description="Thrown if the credentials are incorrect."/>
+    </exceptions>
+  </method>
+
+  <method name="EndSession" method="Delete" endpoint="session/end" session="end" auth="*">
+    <summary>End a web service session. Licences are not returned.</summary>
+    <remarks>Any active session Id is removed and subsequence web service calls will not include a session Id in the headers, effectively indicating to the service that the calls are coming from an anonymous (not authenticated) caller.</remarks>
+    <web fromHeaderName="CarbonServiceClient.SessionIdHeaderKey" fromHeader="sessionId"/>
+    <return type="bool" description="True if the session was ended, False if it was not found."/>
+  </method>
+
+  <method name="LogoffSession" method="Delete" endpoint="session/end/logoff" session="end" auth="*">
+    <summary>End a web service session and issue a licensing logoff.</summary>
+    <remarks>Any active session Id is removed and subsequence web service calls will not include a session Id in the headers, effectively indicating to the service that the calls are coming from an anonymous (not authenticated) caller.</remarks>
+    <web fromHeaderName="CarbonServiceClient.SessionIdHeaderKey" fromHeader="sessionId"/>
+    <return type="int" description="Count of logins remaining."/>
+  </method>
+
+  <method name="ReturnSession" method="Delete" endpoint="session/end/return" session="end" auth="*">
+    <summary>End a web service session and issue a licensing return.</summary>
+    <remarks>Any active session Id is removed and subsequence web service calls will not include a session Id in the headers, effectively indicating to the service that the calls are coming from an anonymous (not authenticated) caller.</remarks>
+    <web fromHeaderName="CarbonServiceClient.SessionIdHeaderKey" fromHeader="sessionId"/>
+    <return type="int" description="Count of logins remaining."/>
+  </method>
+
+  <method name="ListSessions" method="Get" endpoint="session/list" auth="*">
+    <summary>Lists web service sessions. Intended for use in monitoring tools.</summary>
+    <return type="SessionStatus[]" description="An array of [c]SessionStatus[/c] objects."/>
+  </method>
+
+  <method name="ChangePassword" method="Post" endpoint="session/changepass" auth="*">
+    <summary>Changes a licensing account password.</summary>
+    <parameters>
+      <parameter type="string" name="userId" description="Licensing account user Id."/>
+      <parameter type="string" name="oldPassword" description="Old password."/>
+      <parameter type="string" name="newPassword" description="New password."/>
+    </parameters>
+    <web postType="ChangePasswordRequest"/>
+    <return type="GenericResponse" description="A result code and optional error message."/>
+  </method>
+
+  <method name="UpdateAccount" method="Post" endpoint="session/updateaccount" auth="*">
+    <summary>Updates selected account details.</summary>
+    <parameters>
+      <parameter type="string" name="userId" description="Licensing account user Id."/>
+      <parameter type="string" name="userName" description="New user name."/>
+      <parameter type="string" name="comment" description="New comment."/>
+      <parameter type="string" name="email" description="New email address."/>
+    </parameters>
+    <web postType="UpdateAccountRequest"/>
+    <return type="GenericResponse" description="A result code and optional error message."/>
+  </method>
+
+  <!-- JOB -->
+
+  <method name="OpenCloudJob" method="Post" endpoint="job/open" auth="*">
+    <summary>Opens a cloud job and selects it for the crosstab engine.</summary>
+    <parameters>
+      <parameter type="string" name="customerName" description="Cloud customer name (Storage Account name)."/>
+      <parameter type="string" name="jobName" description="Cloud job name (Container name)."/>
+      <parameter type="bool" name="getDisplayProps" default="false" description="TODO"/>
+      <parameter type="bool" name="getVartreeNames" default="false" description="TODO"/>
+      <parameter type="bool" name="getAxisNames" default="false" description="TODO"/>
+      <parameter type="JobTocType" name="tocType" default="JobTocType.ExecUser" description="TODO"/>
+      <parameter type="bool" name="getTocOld" default="false" description="TODO"/>
+      <parameter type="bool" name="getJobIni" default="false" description="TODO"/>
+    </parameters>
+    <web postType="OpenCloudJobRequest"/>
+    <return type="OpenCloudJobResponse" description="An optional aggregation of information about the opened job."/>
+    <exceptions>
+      <exception type="CarbonServiceException" description="Thrown if the credentials are incorrect or the service call fails."/>
+    </exceptions>
+  </method>
+
+  <method name="CloseJob" method="Delete" endpoint="job/close" auth="*">
+    <summary>Closes the currently open job.</summary>
+    <return type="bool" description="True if the job was closed. False if no job was open."/>
+  </method>
+
+  <method name="ReadFileAsLines" method="Post" endpoint="job/readfile/lines" auth="*">
+    <summary>Reads the text lines from a file.</summary>
+    <parameters>
+      <parameter type="string" name="name" description="Simple or path qualified name of the file to read."/>
+    </parameters>
+    <web postType="ReadFileRequest"/>
+    <return type="string[]" description="Text lines of a file under the job home directory. Null is returned if the file is not found."/>
+  </method>
+
+  <method name="ListSimpleToc" method="Get" endpoint="job/toc/simple/{load}" auth="*">
+    <summary>List the structure and contents of a job's simple Table of Contents.</summary>
+    <parameters>
+      <parameter route="true" type="bool" name="load" description="User name of the TOC section to return."/>
+    </parameters>
+    <return type="GenNode[]" description="An array of root nodes representing the hierarchical structure and contents of the simple Table of Contents of the currently open job."/>
+  </method>
+
+  <method name="ListFullToc" method="Get" endpoint="job/toc/full/{load}" auth="*">
+    <summary>List the structure and contents of a job's full Table of Contents.</summary>
+    <parameters>
+      <parameter route="true" type="bool" name="load" description="True to reload the TOC."/>
+    </parameters>
+    <return type="GenNode[]" description="An array of root nodes representing the hierarchical structure and contents of the full Table of Contents of the currently open job."/>
+  </method>
+
+  <method name="ListExecUserToc" method="Get" endpoint="job/toc/execuser/{load}" auth="*">
+    <summary>List the structure and contents of a job's Exec User Table of Contents.</summary>
+    <parameters>
+      <parameter route="true" type="bool" name="load" description="True to reload the TOC."/>
+    </parameters>
+    <return type="GenNode[]" description="An array of root nodes representing the hierarchical structure and contents of the Exec User Table of Contents of the currently open job."/>
+  </method>
+
+  <method name="GetProps" method="Get" endpoint="job/props" auth="*">
+    <summary>Get the display proeprties of the currently open job.</summary>
+    <return type="XDisplayProperties" description="A [c]XDisplayProperties[/c] class instance containing job properties."/>
+  </method>
+
+  <method name="SetProps" method="Post" endpoint="job/props" auth="*">
+    <summary>Sets the display properties of the currently open job.</summary>
+    <parameters>
+      <parameter type="XDisplayProperties" name="props" description="A [c]XDisplayProperties[/c] class instance containing the new job properties."/>
+    </parameters>
+    <web postType="XDisplayProperties" direct="true"/>
+    <return type="int" description="The return value is currently unused and is always zero."/>
+  </method>
+
+  <method name="Filter" method="Post" endpoint="job/filter" auth="*">
+    <summary>Drill filters the current report.</summary>
+    <parameters>
+      <parameter type="FilterRequest" name="request" description="A [c]FilterRequest[/c] class instance containing the filter parameters."/>
+    </parameters>
+    <web postType="FilterRequest" direct="true"/>
+    <return type="XlsxResponse" description="Results of report filtering."/>
+  </method>
+
+  <method name="GenTab" method="Post" endpoint="job/gentab" auth="*">
+    <summary>Generates a crosstab report in different formats.</summary>
+    <parameters>
+      <parameter type="string?" name="name" description="Cloud customer name (Storage Account name)."/>
+      <parameter type="string" name="top" description="Cloud job name (Container name)."/>
+      <parameter type="string" name="side" description="TODO"/>
+      <parameter type="string?" name="filter" description="TODO"/>
+      <parameter type="string?" name="weight" description="TODO"/>
+      <parameter type="XSpecProperties" name="sprops" description="TODO"/>
+      <parameter type="XDisplayProperties" name="dprops" description="TODO"/>
+    </parameters>
+    <web postType="GenTabRequest"/>
+    <return type="string[]" description="Lines of a crosstab report."/>
+  </method>
+
+  <method name="LoadReport" method="Post" endpoint="job/report/load" auth="*">
+    <summary>Loads a report and sets it as the currently loaded and active report for the session.</summary>
+    <parameters>
+      <parameter type="LoadReportRequest" name="request" description="Job relative path and name of the report to load."/>
+    </parameters>
+    <web postType="LoadReportRequest" direct="true"/>
+    <return type="GenericResponse" description="The reponse code is currently always zero (TODO what errors can happen?)."/>
+  </method>
+
+  <method name="BlankReport" method="Get" endpoint="job/report/blank" auth="*">
+    <summary>Sets the currently report to the 'blank' default state.</summary>
+    <return type="GenericResponse" description="A status code and optional error message."/>
+  </method>
+
+  <method name="GenerateXlsx" method="Get" endpoint="job/report/xlsx" auth="*">
+    <summary>Generates XLSX for the currently loaded report.</summary>
+    <return type="XlsxResponse" description="The response gives the url and attributes of the generated XLSX workbook."/>
+  </method>
+
+  <method name="MultiOxt" method="Post" endpoint="job/report/multioxt" auth="*">
+    <summary>Generates OXT outputs for multiple reports.</summary>
+    <parameters>
+      <parameter type="MultiOxtRequest" name="request" description="TODO"/>
+    </parameters>
+    <web postType="MultiOxtRequest" direct="true"/>
+    <return type="MultiOxtResponse" description="TODO"/>
+  </method>
+
+  <method name="MultiOxtStart" method="Post" endpoint="job/report/multioxt/start" auth="*">
+    <summary>Starts backgorund generation of OXT outputs for multiple reports.</summary>
+    <parameters>
+      <parameter type="MultiOxtRequest" name="request" description="TODO"/>
+    </parameters>
+    <web postType="MultiOxtRequest" direct="true"/>
+    <return type="Guid" description="A unique identifier of the background process."/>
+  </method>
+
+  <method name="MultiOxtQuery" method="Get" endpoint="job/report/multioxt/query/{id}" auth="*">
+    <summary>Gets the status of background generation of multiple reports.</summary>
+    <parameters>
+      <parameter route="true" type="Guid" name="id" description="Id of the background processing to query."/>
+    </parameters>
+    <return type="MultiOxtResponse" description="TODO"/>
+  </method>
+
+  <method name="MultiOxtCancel" method="Get" endpoint="job/report/multioxt/cancel/{id}" auth="*">
+    <summary>Cancels a background generation of multiple reports.</summary>
+    <parameters>
+      <parameter route="true" type="Guid" name="id" description="Id of the background processing to cancel."/>
+    </parameters>
+    <return type="bool" description="True if the background process was found and cancelled."/>
+  </method>
+
+  <method name="GetProperties" method="Get" endpoint="job/report/specification" auth="*">
+    <summary>Gets the display properties of the current report.</summary>
+    <return type="XDisplayProperties" description="TODO"/>
+  </method>
+
+  <method name="DeleteReport" method="Post" endpoint="job/report/delete" auth="*">
+    <summary>Deletes a report or folder in the user's TOC.</summary>
+    <parameters>
+      <parameter type="string" name="name" description="The name of the report relative to the TOC root"/>
+    </parameters>
+    <web postType="DeleteReportRequest"/>
+    <return type="GenericResponse" description="A status code and optional error message."/>
+  </method>
+
+  <method name="QuickUpdateReport" method="Post" endpoint="job/report/quickupdate" auth="*">
+    <summary>PENDING.</summary>
+    <parameters>
+      <parameter type="QuickUpdateRequest" name="request" description="TODO"/>
+    </parameters>
+    <web postType="QuickUpdateRequest" direct="true"/>
+    <return type="XlsxResponse" description="Details of the generated report."/>
+  </method>
+
+  <method name="GenTabPandas1" method="Get" endpoint="job/report/pandas1" auth="*">
+    <summary>LEGACY : Transforms the current report into hard-coded JSON in Python pandas library format 1.</summary>
+    <return type="string" description="A string of pandas compatible JSON in legacy format 1."/>
+  </method>
+
+  <method name="GenTabPandas2" method="Get" endpoint="job/report/pandas2" auth="*">
+    <summary>LEGACY : Transforms the current report into hard-coded JSON in Python pandas library format 2.</summary>
+    <return type="string" description="A string of pandas compatible JSON in legacy format 2."/>
+  </method>
+
+  <method name="ReformatTable" method="Post" endpoint="job/report/reformat" auth="*">
+    <summary>Reformats and regenerates a display table without altering the underlying data.</summary>
+    <parameters>
+      <parameter type="XDisplayProperties" name="props" description="A [c]XDisplayProperties[/c] class instance containing the updated report display properties."/>
+    </parameters>
+    <web postType="XDisplayProperties" direct="true"/>
+    <return type="string[]" description="Lines of a reformatted crosstab report."/>
+  </method>
+
+  <method name="SaveReport" method="Post" endpoint="job/report/save" auth="*">
+    <summary>Saves the current crosstab report as a job relative path and name.</summary>
+    <parameters>
+      <parameter type="string" name="name" description="Job relative name of the report to save. Any invalid characters in the name are converted to underscore '_'."/>
+      <parameter type="string?" name="sub" description="Optional subfolder."/>
+    </parameters>
+    <web postType="SaveReportRequest"/>
+    <return type="GenericResponse" description="TODO"/>
+  </method>
+
+  <method name="ListReports" method="Get" endpoint="job/report/list" auth="*">
+    <summary>Lists saved reports as a hierarchy of nodes.</summary>
+    <return type="GenNode[]" description="Root nodes representing the shape and contents of the reports directory."/>
+  </method>
+
+  <method name="ListVartrees" method="Get" endpoint="job/vartree/list" auth="*">
+    <summary>List variable tree names in the currently open job.</summary>
+    <return type="string[]" description="A non-null array of variable tree names in the currently open job."/>
+  </method>
+
+  <method name="VartreeAsNodes" method="Get" endpoint="job/vartree/{name}/nodes" auth="*">
+    <summary>Gets a variable tree as a hierarchy of nodes.</summary>
+    <parameters>
+      <parameter route="true" type="string" name="name" description="The name of the variable tree to retrieve."/>
+    </parameters>
+    <return type="GenNode[]" description="Root nodes representing the shape and contents of a variable tree."/>
+  </method>
+
+  <method name="ListAxisTrees" method="Get" endpoint="job/axistree/list" auth="*">
+    <summary>List axis tree names in the currently open job.</summary>
+    <return type="string[]" description="A non-null array of axis tree names in the currently open job."/>
+  </method>
+
+  <method name="AxisTreeAsNodes" method="Get" endpoint="job/axistree/{name}/nodes" auth="*">
+    <summary>Gets a axis tree as a hierarchy of nodes.</summary>
+    <parameters>
+      <parameter route="true" type="string" name="name" description="The name of the axis tree to retrieve."/>
+    </parameters>
+    <return type="GenNode[]" description="Root nodes representing the shape and contents of a axis tree."/>
+  </method>
+
+  <method name="GetVarMeta" method="Get" endpoint="job/varmeta/{name}" auth="*">
+    <summary>Gets a metadata for a variable name.</summary>
+    <parameters>
+      <parameter route="true" type="string" name="name" description="The name of the variable to retrieve."/>
+    </parameters>
+    <return type="VarMeta" description="A [c]VarMeta[/c] class instance containing metadata for a variable name."/>
+  </method>
+
+  <method name="FunctionAction" method="Post" endpoint="job/function" auth="*">
+    <summary>Creates, edits or deletes functions.</summary>
+    <parameters>
+      <parameter type="FunctionAction" name="action" description="Enumerated action to perform"/>
+      <parameter type="string" name="expression" description="The expression to process"/>
+      <parameter type="string" name="newExpression" description="The replacement expression"/>
+      <parameter type="string" name="label" description="The replacement label"/>
+    </parameters>
+    <web postType="FunctionActionRequest"/>
+    <return type="GenericResponse" description="A status code and optional error message."/>
+  </method>
+
+  <!-- DASHBOARD -->
+
+  <method name="ListDashboards" method="Get" endpoint="dashboard/list/{cust}/{job}" auth="*">
+    <summary>Lists dashboards for a customer and job.</summary>
+    <parameters>
+      <parameter route="true" type="string" name="cust" description="Customer name."/>
+      <parameter route="true" type="string" name="job" description="Job name."/>
+    </parameters>
+    <return type="AzDashboard[]" description="An array of [c]AzDashboard[/c] objects."/>
+  </method>
+
+  <method name="GetDashboard" method="Post" endpoint="dashboard/get" auth="*">
+    <summary>Get a dashboard in a customer and job.</summary>
+    <parameters>
+      <parameter type="string" name="cust" description="Customer name."/>
+      <parameter type="string" name="job" description="Job name."/>
+      <parameter type="string" name="name" description="Dashboard name."/>
+    </parameters>
+    <web postType="DashboardRequest"/>
+    <return type="AzDashboard" description="The Dashboard or null if not found."/>
+  </method>
+
+  <method name="DeleteDashboard" method="Post" endpoint="dashboard/delete" auth="*">
+    <summary>Deletes a dashboard in a customer and job.</summary>
+    <parameters>
+      <parameter type="string" name="cust" description="Customer name."/>
+      <parameter type="string" name="job" description="Job name."/>
+      <parameter type="string" name="name" description="Dashboard name."/>
+    </parameters>
+    <web postType="DashboardRequest"/>
+    <return type="bool" description="True if the dashboard was delete, false if was not found."/>
+  </method>
+
+  <method name="UpsertDashboard" method="Post" endpoint="dashboard/upsert" auth="*">
+    <summary>Updates or inserts a dashboard.</summary>
+    <parameters>
+      <parameter type="UpsertDashboardRequest" name="request" description="Specifies the dashboard data to update or insert."/>
+    </parameters>
+    <web postType="UpsertDashboardRequest" direct="true"/>
+    <return type="AzDashboard" description="The dashboard after processing."/>
+  </method>
+
+</methods>
