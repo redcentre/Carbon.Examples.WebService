@@ -25,6 +25,26 @@
     <return type="ServiceInfo" description="An instance of a [c]ServiceInfo[/c] class."/>
   </method>
 
+  <method name="StartLog" method="Get" endpoint="service/log/start">
+    <summary>Starts internal logging.</summary>
+    <return type="bool" description="Always returns true."/>
+  </method>
+
+  <method name="EndLog" method="Get" endpoint="service/log/end">
+    <summary>Ends internal logging.</summary>
+    <return type="bool" description="Always returns true."/>
+  </method>
+
+  <method name="ClearLog" method="Get" endpoint="service/log/clear">
+    <summary>Clears internal logging.</summary>
+    <return type="bool" description="Always returns true."/>
+  </method>
+
+  <method name="ListLog" method="Get" endpoint="service/log/list">
+    <summary>Lists internal logging lines.</summary>
+    <return type="string" description="An array of string logging lines."/>
+  </method>
+
   <!-- SESSION -->
 
   <method name="StartSessionFree" method="Post" endpoint="session/start/free" session="start">

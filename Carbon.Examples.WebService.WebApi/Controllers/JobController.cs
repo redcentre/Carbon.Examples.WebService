@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Carbon.Examples.WebService.Common;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RCS.Carbon.Shared;
@@ -20,7 +19,6 @@ namespace Carbon.Examples.WebService.WebApi.Controllers
 	{
 		async Task<ActionResult<OpenCloudJobResponse>> OpenCloudJobImpl(OpenCloudJobRequest request)
 		{
-			Trce.In("OpenCloudJobImpl");
 			using var wrap = new StateWrap(SessionId, true);
 			try
 			{
@@ -44,13 +42,11 @@ namespace Carbon.Examples.WebService.WebApi.Controllers
 				else if (request.TocType == JobTocType.ExecUser)
 				{
 					tocnodes = wrap.Engine.ExecUserTOCGenNodes();
-					DumpNodes(tocnodes);
 				}
 			}
 			var jobini = request.GetIni ? wrap.Engine.GetJobIniAsNodes() : null;
 			var response = new OpenCloudJobResponse(dprops, vtnames, axnames, tocnodes, jobini);
 			Logger.LogInformation(240, "{RequestSequence} {Sid} Open job '{CustomerName}' Job '{JobName}' {DProps} {VtCount} {AxCount} {TocNewCount}", RequestSequence, Sid, request.CustomerName, request.JobName, dprops, vtnames?.Length, axnames?.Length, tocnodes?.Length);
-			Trce.Out("OpenCloudJobImpl");
 			return await Task.FromResult(response);
 		}
 
@@ -240,6 +236,7 @@ namespace Carbon.Examples.WebService.WebApi.Controllers
 					state.ProgressMessage = $"Running report {tup.Ix + 1}/{state.Request.ReportNames.Length}";
 					watch.Restart();
 					string fixname = FixMultiName(tup.Name);
+					Trce.Log($"MultiOxtProc {tup.Name}");
 					string oxt = wrap.Engine.DrillDashboardTableAsOXT(tup.Name, fullfilter);
 					string[] lines = CommonUtil.ReadStringLines(oxt).ToArray();
 
@@ -417,6 +414,7 @@ namespace Carbon.Examples.WebService.WebApi.Controllers
 
 		async Task<ActionResult<Guid>> MultiOxtStartImpl(MultiOxtRequest request)
 		{
+			Trce.Log("MultiOxtStartImpl");
 			var state = MakeState(request);
 			_ = Task.Factory.StartNew((s) =>
 			{
@@ -439,8 +437,11 @@ namespace Carbon.Examples.WebService.WebApi.Controllers
 				response.Items = moxt.Items;
 				if (moxt.Items != null)
 				{
+					// When the Items array has a value then the loop over the multi-reports
+					// is finished and we can remove the state. The caller must recognise that
+					// the Items are present and realise that the reports are finished.
 					RemoveState(moxt.Id);
-					//LogInfo(892, $"Multi OXT Id {id} complete and removed (count down to {Global.StateCount})");
+					Trce.Log($"Multi OXT Id {id} complete and removed (count down to {MoxtList.Count})");
 				}
 				else
 				{

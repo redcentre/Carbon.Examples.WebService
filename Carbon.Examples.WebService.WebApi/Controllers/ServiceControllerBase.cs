@@ -36,8 +36,6 @@ namespace Carbon.Examples.WebService.WebApi.Controllers
 		/// <ignore/>
 		public ServiceControllerBase(ILoggerFactory logfac, IConfiguration config)
 		{
-			Trce.Blank();
-			Trce.In($"{GetType().Name} {HttpContext?.Request.Method} {HttpContext?.Request.Path}");
 			Logger = logfac.CreateLogger("WEBC");
 			Config = config;
 		}
@@ -45,7 +43,6 @@ namespace Carbon.Examples.WebService.WebApi.Controllers
 		/// <ignore/>
 		public void Dispose()
 		{
-			Trce.Out(GetType().Name);
 		}
 
 		/// <summary>

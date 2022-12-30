@@ -1,14 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using RCS.Carbon.Variables;
 using Carbon.Examples.WebService.Common;
+using Microsoft.AspNetCore.Mvc;
+using RCS.Carbon.Shared;
+using RCS.Carbon.Variables;
 
 namespace Carbon.Examples.WebService.WebApi.Controllers
 {
-    partial class ServiceController
+	partial class ServiceController
 	{
 		async Task<ActionResult<int>> MockErrorImpl(int number)
 		{
@@ -44,6 +46,30 @@ namespace Carbon.Examples.WebService.WebApi.Controllers
 				LicensingBaseAddress = Config["Service:LicensingBaseAddress"]
 			};
 			return await Task.FromResult(info);
+		}
+
+		async Task<ActionResult<bool>> StartLogImpl()
+		{
+			VarLib.StartLog();
+			return await Task.FromResult(true);
+		}
+
+		async Task<ActionResult<bool>> EndLogImpl()
+		{
+			VarLib.EndLog();
+			return await Task.FromResult(true);
+		}
+
+		async Task<ActionResult<bool>> ClearLogImpl()
+		{
+			VarLib.ClearLog();
+			return await Task.FromResult(true);
+		}
+
+		async Task<ActionResult<string>> ListLogImpl()
+		{
+			string body = VarLib.GetLog();
+			return await Task.FromResult(body);
 		}
 	}
 }

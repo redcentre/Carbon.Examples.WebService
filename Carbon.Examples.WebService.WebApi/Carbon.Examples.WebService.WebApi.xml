@@ -16,59 +16,6 @@
             logged here because the action filter won't do it.
             </summary>
         </member>
-        <member name="T:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase">
-            <ignore/>
-        </member>
-        <member name="F:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.LicensingBaseAddress">
-            <ignore/>
-        </member>
-        <member name="F:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Logger">
-            <summary>
-            All derived controllers can use this logger service.
-            </summary>
-        </member>
-        <member name="F:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Config">
-            <summary>
-            All derived controllers can use this configuration service.
-            </summary>
-        </member>
-        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.#ctor(Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Configuration.IConfiguration)">
-            <ignore/>
-        </member>
-        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Dispose">
-            <ignore/>
-        </member>
-        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.SessionId">
-            <summary>
-            Get the Session Id out of the current request headers. The caller of this property knows that a session
-            must be started, so a failure to get the value is considered a request failure.
-            </summary>
-        </member>
-        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Secs">
-            <summary>
-            Elapsed time since the standard filter attribute detected action starting.
-            </summary>
-        </member>
-        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Sid">
-            <summary>
-            An abbreviated Session ID slug to help logging.
-            </summary>
-        </member>
-        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.RequestSequence">
-            <summary>
-            Attempts to get the request sequence out of the context items.
-            </summary>
-        </member>
-        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.AzProc">
-            <summary>
-            Lazy reference to a single instance of an RCS Azure data processor.
-            </summary>
-        </member>
-        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Lic">
-            <summary>
-            Lazy reference to a single instance of a licensing service client.
-            </summary>
-        </member>
         <member name="T:Carbon.Examples.WebService.WebApi.Controllers.DashboardController">
             <summary>
             Web API controller for endpoint /dashboard
@@ -444,6 +391,30 @@
             </summary>
             <response code="200">An instance of a <c>ServiceInfo</c> class.</response>
         </member>
+        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceController.StartLog">
+            <summary>
+            Starts internal logging.
+            </summary>
+            <response code="200">Always returns true.</response>
+        </member>
+        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceController.EndLog">
+            <summary>
+            Ends internal logging.
+            </summary>
+            <response code="200">Always returns true.</response>
+        </member>
+        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceController.ClearLog">
+            <summary>
+            Clears internal logging.
+            </summary>
+            <response code="200">Always returns true.</response>
+        </member>
+        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceController.ListLog">
+            <summary>
+            Lists internal logging lines.
+            </summary>
+            <response code="200">An array of string logging lines.</response>
+        </member>
         <member name="T:Carbon.Examples.WebService.WebApi.Controllers.SessionController">
             <summary>
             Web API controller for endpoint /session
@@ -544,6 +515,59 @@
             Generates a random Session Id which can take about 10^15 values assuming that the
             Guid hash codes are equidistributed, which is likely because it is suspected that 
             they are crypto-strong. A session Id contains about 50 bits of entropy.
+            </summary>
+        </member>
+        <member name="T:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase">
+            <ignore/>
+        </member>
+        <member name="F:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.LicensingBaseAddress">
+            <ignore/>
+        </member>
+        <member name="F:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Logger">
+            <summary>
+            All derived controllers can use this logger service.
+            </summary>
+        </member>
+        <member name="F:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Config">
+            <summary>
+            All derived controllers can use this configuration service.
+            </summary>
+        </member>
+        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.#ctor(Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Configuration.IConfiguration)">
+            <ignore/>
+        </member>
+        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Dispose">
+            <ignore/>
+        </member>
+        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.SessionId">
+            <summary>
+            Get the Session Id out of the current request headers. The caller of this property knows that a session
+            must be started, so a failure to get the value is considered a request failure.
+            </summary>
+        </member>
+        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Secs">
+            <summary>
+            Elapsed time since the standard filter attribute detected action starting.
+            </summary>
+        </member>
+        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Sid">
+            <summary>
+            An abbreviated Session ID slug to help logging.
+            </summary>
+        </member>
+        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.RequestSequence">
+            <summary>
+            Attempts to get the request sequence out of the context items.
+            </summary>
+        </member>
+        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.AzProc">
+            <summary>
+            Lazy reference to a single instance of an RCS Azure data processor.
+            </summary>
+        </member>
+        <member name="P:Carbon.Examples.WebService.WebApi.Controllers.ServiceControllerBase.Lic">
+            <summary>
+            Lazy reference to a single instance of a licensing service client.
             </summary>
         </member>
         <member name="T:Carbon.Examples.WebService.WebApi.GeneralActionFilterAttribute">

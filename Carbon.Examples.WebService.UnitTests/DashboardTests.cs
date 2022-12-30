@@ -14,7 +14,7 @@ namespace Carbon.Examples.WebService.UnitTests
 		Random rand = new Random();
 
 		[TestMethod]
-		public async Task T010_KPI_MultiOxt()
+		public async Task T010_MultiOxt_Sync()
 		{
 			Sep1("AuthenticateName");
 			using var client = MakeClient();
@@ -22,15 +22,22 @@ namespace Carbon.Examples.WebService.UnitTests
 			Trace($"Login Id {sinfo.Id} Name {sinfo.Name} Session {sinfo.SessionId}");
 
 			Sep1("OpenCloudJob");
-			OpenCloudJobResponse jobinfo = await client.OpenCloudJob(CustomerName, JobName);
+			OpenCloudJobResponse jobinfo = await client.OpenCloudJob("client1rcs", "skyuk");
+			//OpenCloudJobResponse jobinfo = await client.OpenCloudJob("client1rcs", "demo");
 
 			Sep1("MultiOxt");
 			var multireq = new MultiOxtRequest()
 			{
-				Filters = new FilterPair[0],// { new FilterPair("North", "Region(1;4)") },
-				ReportNames = KPIReporNames,
+				Filters = new FilterPair[] { new FilterPair("MASTER FILTER", "BB_Master(1)", false), new FilterPair("Age Groups", "BB_Age(3)", false) },
+				ReportNames = BB_Chart_Tables_ReporNames,
 				TableOnly = true
 			};
+			//var multireq = new MultiOxtRequest()
+			//{
+			//	Filters = new FilterPair[] { new FilterPair("Quarter", null, true), new FilterPair("Quarter", null, true), new FilterPair("Custom", null, false), new FilterPair("Male", "GEN(1)", false) },
+			//	ReportNames = KPIReporNames,
+			//	TableOnly = true
+			//};
 			Dumpobj(multireq);
 			MultiOxtResponse multiresp = await client.MultiOxt(multireq);
 			DumpMultiOxtResponse(multiresp);
@@ -41,7 +48,7 @@ namespace Carbon.Examples.WebService.UnitTests
 		}
 
 		[TestMethod]
-		public async Task T020_KPI_MultiOxt_Start()
+		public async Task T020_MultiOxt_Start()
 		{
 			Sep1("AuthenticateName");
 			using var client = MakeClient();
@@ -49,21 +56,28 @@ namespace Carbon.Examples.WebService.UnitTests
 			Trace($"Login Id {sinfo.Id} Name {sinfo.Name} Session {sinfo.SessionId}");
 
 			Sep1("OpenCloudJob");
-			OpenCloudJobResponse jobinfo = await client.OpenCloudJob(CustomerName, JobName);
+			OpenCloudJobResponse jobinfo = await client.OpenCloudJob("client1rcs", "skyuk");
+			//OpenCloudJobResponse jobinfo = await client.OpenCloudJob("client1rcs", "demo");
 
 			Sep1("MultiOxt");
 			var multireq = new MultiOxtRequest()
 			{
-				Filters = new FilterPair[] { new FilterPair("Quarter", null, true), new FilterPair("Quarter", null, true), new FilterPair("Custom", null, false) },
-				ReportNames = KPIReporNames,
+				Filters = new FilterPair[] { new FilterPair("MASTER FILTER", "BB_Master(1)", false), new FilterPair("Age Groups", "BB_Age(3)", false) },
+				ReportNames = BB_Chart_Tables_ReporNames,
 				TableOnly = true
 			};
+			//var multireq = new MultiOxtRequest()
+			//{
+			//	Filters = new FilterPair[] { new FilterPair("Quarter", null, true), new FilterPair("Quarter", null, true), new FilterPair("Custom", null, false), new FilterPair("Male", "GEN(1)", false) },
+			//	ReportNames = KPIReporNames,
+			//	TableOnly = true
+			//};
 			Dumpobj(multireq);
 			Guid id = await client.MultiOxtStart(multireq);
 			MultiOxtResponse? resp = null;
 			while (resp?.Items == null)
 			{
-				await Task.Delay(350);
+				await Task.Delay(5000);
 				resp = await client.MultiOxtQuery(id);
 				Trace($"POLL {resp.ProgressMessage}");
 			}
@@ -146,7 +160,7 @@ namespace Carbon.Examples.WebService.UnitTests
 		}
 
 		static readonly string[] KPIReporNames =
-	{
+		{
 			@"\DashboardSource\Dashboard_KPI\z1_KPI_BrandAwa_Summary",
 			@"\DashboardSource\Dashboard_KPI\z2_KPI_BIM",
 			@"\DashboardSource\Dashboard_KPI\z3_Funnel_BrandX",
@@ -156,6 +170,42 @@ namespace Carbon.Examples.WebService.UnitTests
 			@"\DashboardSource\Dashboard_KPI\z7_RegionalSales",
 			@"\DashboardSource\Dashboard_KPI\z8_BrandXProvenRecallMonth",
 			@"\DashboardSource\Dashboard_KPI\z9_BrandXProvenRecallQrt"
+		};
+
+		static readonly string[] BB_Chart_Tables_ReporNames =
+		{
+			@"\DashboardSource\Chart Tables\Broadband\BC Spon Aware Comp P",
+			@"\DashboardSource\Chart Tables\Broadband\BC Con Comp P",
+			@"\DashboardSource\Chart Tables\Broadband\BC Desire Comp P",
+			@"\DashboardSource\Chart Tables\Broadband\BC ITP Comp P",
+			@"\DashboardSource\Chart Tables\Broadband\BC Spon Aware Sky Prospect",
+			@"\DashboardSource\Chart Tables\Broadband\BC Con Sky Prospect",
+			@"\DashboardSource\Chart Tables\Broadband\BC Desire Sky Prospect",
+			@"\DashboardSource\Chart Tables\Broadband\BC ITP Sky Prospect",
+			@"\DashboardSource\Chart Tables\Broadband\BC Spon Aware Sky Pure",
+			@"\DashboardSource\Chart Tables\Broadband\BC Con Sky Pure",
+			@"\DashboardSource\Chart Tables\Broadband\BC Desire Sky Pure",
+			@"\DashboardSource\Chart Tables\Broadband\BC ITP Sky Pure",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_21 Driver PP Reliable",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_19 Driver PP Speed",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_20 Driver PP WiFi",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_4 Driver PP Looks",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_6 Driver PP Service",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_2 Driver PP Leader",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_21 Driver P Reliable",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_19 Driver P Speed",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_20 Driver P WiFi",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_4 Driver P Looks",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_6 Driver P Service",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_2 Driver P Leader",
+			@"\DashboardSource\Chart Tables\Broadband\BC Committed Customers",
+			@"\DashboardSource\Chart Tables\Broadband\BC Customers At Risk",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_21 Driver C Reliable",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_20 Driver C WiFi",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_19 Driver C Speed",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_4 Driver C Looks",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_6 Driver C Service",
+			@"\DashboardSource\Chart Tables\Broadband\BC BI_2 Driver C Leader"
 		};
 	}
 }

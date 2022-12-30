@@ -57,7 +57,7 @@ namespace Carbon.Examples.WebService.WebApi.Controllers
 				var accinfo = LicToInfo(licence, sessionId);
 				string[] state = engine.SaveState();
 				SessionManager.SaveState(sessionId, state);
-				Logger.LogInformation(100, "{RequestSequence} {Sid} Login Session {SessionName} Name {LicenceName} Name {LicenceName}", RequestSequence, GeneralActionFilterAttribute.EmptySid, sessionId, licence.Name, licence.Name);
+				Logger.LogInformation(100, "{RequestSequence} {Sid} Login Session {SessionName} Name {LicenceName}", RequestSequence, GeneralActionFilterAttribute.EmptySid, sessionId, licence.Name);
 				return Ok(accinfo);
 			}
 			catch (CarbonException ex)
