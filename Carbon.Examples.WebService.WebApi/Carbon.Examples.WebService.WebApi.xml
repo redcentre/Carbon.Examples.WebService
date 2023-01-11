@@ -415,6 +415,20 @@
             </summary>
             <response code="200">An array of string logging lines.</response>
         </member>
+        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceController.ReadTiming1(Carbon.Examples.WebService.Common.ReadTimingRequest1)">
+            <summary>
+            Blob read timing tests (type 1).
+            </summary>
+            <param name="request">A serialized <c>ReadTimingRequest1</c> provided in the request body.</param>
+            <response code="200">Lines of the results.</response>
+        </member>
+        <member name="M:Carbon.Examples.WebService.WebApi.Controllers.ServiceController.ReadTiming2(Carbon.Examples.WebService.Common.ReadTimingRequest2)">
+            <summary>
+            Blob read timing tests (type 2).
+            </summary>
+            <param name="request">A serialized <c>ReadTimingRequest2</c> provided in the request body.</param>
+            <response code="200">Lines of the results.</response>
+        </member>
         <member name="T:Carbon.Examples.WebService.WebApi.Controllers.SessionController">
             <summary>
             Web API controller for endpoint /session

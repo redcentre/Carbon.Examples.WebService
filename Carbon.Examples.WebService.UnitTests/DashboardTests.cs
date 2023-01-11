@@ -56,28 +56,28 @@ namespace Carbon.Examples.WebService.UnitTests
 			Trace($"Login Id {sinfo.Id} Name {sinfo.Name} Session {sinfo.SessionId}");
 
 			Sep1("OpenCloudJob");
-			OpenCloudJobResponse jobinfo = await client.OpenCloudJob("client1rcs", "skyuk");
-			//OpenCloudJobResponse jobinfo = await client.OpenCloudJob("client1rcs", "demo");
+			//OpenCloudJobResponse jobinfo = await client.OpenCloudJob("client1rcs", "skyuk");
+			OpenCloudJobResponse jobinfo = await client.OpenCloudJob("client1rcs", "demo");
 
 			Sep1("MultiOxt");
-			var multireq = new MultiOxtRequest()
-			{
-				Filters = new FilterPair[] { new FilterPair("MASTER FILTER", "BB_Master(1)", false), new FilterPair("Age Groups", "BB_Age(3)", false) },
-				ReportNames = BB_Chart_Tables_ReporNames,
-				TableOnly = true
-			};
 			//var multireq = new MultiOxtRequest()
 			//{
-			//	Filters = new FilterPair[] { new FilterPair("Quarter", null, true), new FilterPair("Quarter", null, true), new FilterPair("Custom", null, false), new FilterPair("Male", "GEN(1)", false) },
-			//	ReportNames = KPIReporNames,
+			//	Filters = new FilterPair[] { new FilterPair("MASTER FILTER", "BB_Master(1)", false), new FilterPair("Age Groups", "BB_Age(3)", false) },
+			//	ReportNames = BB_Chart_Tables_ReporNames,
 			//	TableOnly = true
 			//};
+			var multireq = new MultiOxtRequest()
+			{
+				Filters = new FilterPair[] { new FilterPair("Quarter", null, true), new FilterPair("Quarter", null, true), new FilterPair("Custom", null, false), new FilterPair("Male", "GEN(1)", false) },
+				ReportNames = KPIReporNames,
+				TableOnly = true
+			};
 			Dumpobj(multireq);
 			Guid id = await client.MultiOxtStart(multireq);
 			MultiOxtResponse? resp = null;
 			while (resp?.Items == null)
 			{
-				await Task.Delay(5000);
+				await Task.Delay(1000);
 				resp = await client.MultiOxtQuery(id);
 				Trace($"POLL {resp.ProgressMessage}");
 			}

@@ -32,8 +32,8 @@ namespace Carbon.Examples.WebService.Common
 
 		public IEnumerable<string[]> WalkValues()
 		{
-			int skip = 1 + (Titles_RowCount ?? 4) + 1 + 1 + (SigShowLetters == true && DispColLetters == true ? 1 : 0);
-			foreach (string line in OxtLines.Skip(skip))
+			//int skip = 1 + (Titles_RowCount ?? 4) + 1 + 1 + (SigShowLetters == true && DispColLetters == true ? 1 : 0);
+			foreach (string line in OxtLines.Skip(2))	// NOTE The new OXTNums lines always need a skip of 2 lines
 			{
 				yield return line.Split('\t').ToArray();
 			}

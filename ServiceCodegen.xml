@@ -45,6 +45,24 @@
     <return type="string" description="An array of string logging lines."/>
   </method>
 
+  <method name="ReadTiming1" method="Post" endpoint="service/readtiming1">
+    <summary>Blob read timing tests (type 1).</summary>
+    <parameters>
+      <parameter type="ReadTimingRequest1" name="request" description="Parameters for the timing tests"/>
+    </parameters>
+    <web postType="ReadTimingRequest1" direct="true"/>
+    <return type="string[]" description="Lines of the results."/>
+  </method>
+
+  <method name="ReadTiming2" method="Post" endpoint="service/readtiming2">
+    <summary>Blob read timing tests (type 2).</summary>
+    <parameters>
+      <parameter type="ReadTimingRequest2" name="request" description="Parameters for the timing tests"/>
+    </parameters>
+    <web postType="ReadTimingRequest2" direct="true"/>
+    <return type="string[]" description="Lines of the results."/>
+  </method>
+
   <!-- SESSION -->
 
   <method name="StartSessionFree" method="Post" endpoint="session/start/free" session="start">
